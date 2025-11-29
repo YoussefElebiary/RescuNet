@@ -137,7 +137,7 @@ class RescuNet(nn.Module):
         return logits
 
     def load_model(self, model_path, device):
-        state_dict = torch.load(model_path, map_location=device)
+        state_dict = torch.load(model_path, map_location=device, weights_only=True)
         self.load_state_dict(state_dict)
         self.to(device)
         self.eval()

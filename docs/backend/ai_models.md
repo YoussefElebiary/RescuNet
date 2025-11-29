@@ -32,7 +32,7 @@ The model is built using **PyTorch Geometric** and features a custom architectur
     -   **Output**: A single scalar logit representing the predicted edge weight modifier.
 
 <div align="center">
-    <img src="../../assets/gnn.png" alt="GNN Architecture Diagram" width="500">
+    <img src="../assets/gnn.png" alt="GNN Architecture Diagram" width="500">
 </div>
 
 ### Usage in Routing
@@ -52,7 +52,7 @@ We utilize the **Ultralytics YOLOv11** architecture for high-speed, real-time ob
 ### Modes of Operation
 
 <div align="center">
-    <img src="../../assets/yolo.png" alt="YOLOv11 Architecture Diagram" width="700">
+    <img src="../assets/yolo.png" alt="YOLOv11 Architecture Diagram" width="700">
     <br>
     <i>Diagram courtesy of Ultralytics (Usage subject to license terms)</i>
 </div>

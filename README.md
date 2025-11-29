@@ -30,8 +30,10 @@ RescuNet is a comprehensive platform designed to revolutionize emergency respons
 </div>
 
 ### 🚁 Aerial Intelligence
-- **Real-Time Detection**: Utilizes **YOLOv11** to detect survivors and fire hazards instantly from drone video feeds.
-- **Dual-Mode Surveillance**: Supports both **Thermal** (Person Detection) and **RGB** (Fire Detection) modes for versatile operation.
+- **Real-Time Detection**: Utilizes **YOLOv11** to detect survivors, fire, and smoke hazards instantly from drone video feeds.
+- **Dual-Mode Surveillance**: Supports both **Thermal** (Person Detection) and **RGB** (Fire & Smoke Detection) modes.
+  - **Fire**: Detected with **Red** bounding boxes.
+  - **Smoke**: Detected with **Gray** bounding boxes.
 - **Low-Latency Streaming**: WebSocket-based architecture ensures real-time video transmission and processing.
 
 <div align="center" style="padding: 0; margin: 0; top: 0;">
@@ -56,7 +58,7 @@ RescuNet is a comprehensive platform designed to revolutionize emergency respons
 - **Backend**: FastAPI, Python 3.9
 - **Core Logic**: C++, PyBind11, OSMNx, NetworkX
 - **AI / ML**: PyTorch, PyTorch Geometric, Ultralytics YOLO
-- **Frontend**: HTML5, JavaScript (ES6+), TailwindCSS, MapLibre GL JS
+- **Frontend**: React 19, Vite, TailwindCSS, MapLibre GL JS
 - **Dependency Management**: Pipenv
 
 ## Installation
@@ -88,7 +90,12 @@ cd ..
 
 ### 3. Frontend Setup
 
-No build step is required for the frontend as it uses vanilla JS and CDN-hosted libraries.
+Navigate to the frontend directory and install dependencies:
+
+```bash
+cd frontend
+npm install
+```
 
 ## Usage
 
@@ -104,9 +111,14 @@ The API will be available at `http://localhost:8000`.
 - **Health Check**: `http://localhost:8000/api/health`
 
 ### Launch the Frontend
-Open `frontend/index.html` in your web browser.
+Run the development server:
 
-> **Note**: For the best experience and to avoid CORS issues with local file access, it is recommended to serve the frontend using a local development server (e.g., "Live Server" extension in VS Code or `python -m http.server`).
+```bash
+cd frontend
+npm run dev
+```
+
+Open the URL shown in the terminal (usually `http://localhost:5173`).
 
 ## Project Structure
 
@@ -119,13 +131,16 @@ RescuNet/
 │   ├── router/                # Routing logic (Python & C++)
 │   ├── docs/                  # Backend documentation
 │   └── Pipfile                # Python dependencies
-├── frontend/                  # User Interface
-│   ├── static/                # CSS, JS, and image assets
-│   ├── index.html             # Landing page
-│   ├── camera.html            # Live surveillance feed
-│   ├── route.html             # Mission planning map
-│   ├── text_analysis.html     # Text classification tool
-│   └── drone_simulation.html  # Drone simulation (accessible via URL only)
+├── frontend/                  # React Application
+│   ├── public/                # Static assets
+│   ├── src/                   # Source code
+│   │   ├── components/        # Reusable UI components
+│   │   ├── pages/             # Route pages (LiveFeed, RoutePlanner, etc.)
+│   │   ├── App.jsx            # Main app component
+│   │   └── main.jsx           # Entry point
+│   ├── index.html             # HTML entry point
+│   ├── package.json           # Dependencies
+│   └── vite.config.js         # Vite configuration
 ├── LICENSE                    # Project license file
 └── README.md                  # Project documentation
 ```

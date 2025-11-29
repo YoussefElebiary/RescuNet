@@ -11,8 +11,8 @@ shapely = "*"
 pybind11 = "*"
 python-multipart = "*"
 ultralytics = "*"
-torch = "*"
 torch-geometric = "*"
+uvicorn = "*"
 
 [dev-packages]
 

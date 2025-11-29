@@ -217,12 +217,23 @@ def run_inference(frame_bytes, mode):
                 
                     if conf < 0.45: continue # Threshold
 
-                    cv2.rectangle(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
-                    label = f"Fire/Smoke {conf:.2f}"
+                    cls = int(box.cls[0])
+                    class_name = result.names[cls]
+                    
+                    # Color Selection (BGR)
+                    if class_name.lower() == "fire":
+                        color = (0, 0, 255) # Red
+                    elif class_name.lower() == "smoke":
+                        color = (200, 200, 200) # Gray
+                    else:
+                        color = (0, 165, 255) # Orange (Default)
+
+                    cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
+                    label = f"{class_name} {conf:.2f}"
                 
                     # Draw text below if it goes off-screen
                     text_y = y1 - 10 if y1 - 10 > 10 else y1 + 20
-                    cv2.putText(img, label, (x1 + 5, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                    cv2.putText(img, label, (x1 + 5, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
         # Inference (People)
         if people_results:
