@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RescuNet | Drone Simulator</title>
+    <link rel="icon" type="image/x-icon" href="./static/images/logo.png">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="./static/css/style.css">
+</head>
+
+<body
+    class="bg-slate-950 text-slate-200 font-sans flex flex-col min-h-screen selection:bg-blue-500 selection:text-white">
+
+    <!-- Navbar -->
+    <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 flex-none z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+            <!-- Logo -->
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center">
+                    <img src="./static/images/logo.png" alt="RescuNet - Disaster Response Intelligence"
+                        class="h-8 w-auto">
+                </div>
+                <h1 class="text-xl font-bold text-white tracking-wide">Rescu<span class="text-blue-500">Net</span></h1>
+            </div>
+            <div class="text-xs font-mono text-slate-500 border border-slate-700 px-2 py-1 rounded">
+                SIMULATOR MODE
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col items-center justify-center p-6">
+
+        <div class="max-w-4xl w-full space-y-8">
+
+            <!-- Header -->
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-white mb-2">Drone Feed Simulator</h2>
+                <p class="text-slate-400">Simulate a drone connection by streaming from your camera or a video file.</p>
+            </div>
+
+            <!-- Controls -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+
+                <!-- Source Selection -->
+                <div class="flex justify-center mb-8 border-b border-slate-800 pb-6">
+                    <div class="inline-flex bg-slate-800 rounded-lg p-1">
+                        <button id="cameraModeBtn"
+                            class="px-6 py-2 rounded-md text-sm font-medium transition-all bg-blue-600 text-white shadow-lg">
+                            <i class="fas fa-camera mr-2"></i> Camera Source
+                        </button>
+                        <button id="fileModeBtn"
+                            class="px-6 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-white transition-all">
+                            <i class="fas fa-file-video mr-2"></i> File Source
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Camera Controls -->
+                <div id="cameraControls" class="flex justify-center gap-4">
+                    <button id="startCameraBtn"
+                        class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-lg font-medium shadow-lg shadow-emerald-500/20 transition flex items-center">
+                        <i class="fas fa-play mr-2"></i> Start Camera Stream
+                    </button>
+                    <button id="stopCameraBtn" disabled
+                        class="bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-lg font-medium shadow-lg shadow-red-500/20 transition flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-stop mr-2"></i> Stop Stream
+                    </button>
+                </div>
+
+                <!-- File Controls -->
+                <div id="fileControls" class="hidden flex flex-col items-center gap-4">
+                    <input type="file" id="videoUpload" accept="video/*" class="hidden">
+                    <button id="uploadBtn"
+                        class="bg-slate-700 hover:bg-slate-600 text-white px-6 py-3 rounded-lg font-medium border border-slate-600 transition flex items-center">
+                        <i class="fas fa-upload mr-2"></i> Select Video File
+                    </button>
+                    <p id="fileName" class="text-sm text-slate-500 italic hidden">No file selected</p>
+
+                    <div class="flex gap-4 mt-2">
+                        <button id="startFileBtn" disabled
+                            class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-lg font-medium shadow-lg shadow-emerald-500/20 transition flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fas fa-play mr-2"></i> Start File Stream
+                        </button>
+                        <button id="stopFileBtn" disabled
+                            class="bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-lg font-medium shadow-lg shadow-red-500/20 transition flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fas fa-stop mr-2"></i> Stop Stream
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="mt-6 text-center">
+                    <div id="status"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-800 text-slate-400 text-sm font-mono border border-slate-700">
+                        <div class="w-2 h-2 rounded-full bg-slate-500"></div>
+                        Status: Idle
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview -->
+            <div
+                class="relative rounded-xl overflow-hidden border border-slate-800 bg-black aspect-video flex items-center justify-center shadow-2xl">
+                <div
+                    class="absolute top-4 left-4 z-10 px-2 py-1 bg-slate-900/80 text-slate-300 text-xs font-mono rounded border border-slate-700">
+                    SIMULATOR PREVIEW
+                </div>
+
+                <video id="previewVideo" autoplay playsinline muted class="w-full h-full object-contain hidden"></video>
+
+                <div id="placeholder" class="text-slate-600 flex flex-col items-center">
+                    <i class="fas fa-video-slash text-4xl mb-3 opacity-50"></i>
+                    <p class="text-sm font-medium">No active source</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Hidden Canvas for Processing -->
+    <canvas id="canvas" class="hidden"></canvas>
+
+    <script>
+        const cameraModeBtn = document.getElementById('cameraModeBtn');
+        const fileModeBtn = document.getElementById('fileModeBtn');
+        const cameraControls = document.getElementById('cameraControls');
+        const fileControls = document.getElementById('fileControls');
+
+        const startCameraBtn = document.getElementById('startCameraBtn');
+        const stopCameraBtn = document.getElementById('stopCameraBtn');
+
+        const uploadBtn = document.getElementById('uploadBtn');
+        const videoUpload = document.getElementById('videoUpload');
+        const fileNameDisplay = document.getElementById('fileName');
+        const startFileBtn = document.getElementById('startFileBtn');
+        const stopFileBtn = document.getElementById('stopFileBtn');
+
+        const previewVideo = document.getElementById('previewVideo');
+        const placeholder = document.getElementById('placeholder');
+        const statusDiv = document.getElementById('status');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let websocket;
+        let streamInterval;
+        let mediaStream;
+        let currentMode = 'camera'; // 'camera' or 'file'
+
+        // --- UI Switching ---
+        cameraModeBtn.addEventListener('click', () => switchMode('camera'));
+        fileModeBtn.addEventListener('click', () => switchMode('file'));
+
+        function switchMode(mode) {
+            if (websocket) stopStream(); // Stop any active stream first
+
+            currentMode = mode;
+            if (mode === 'camera') {
+                cameraModeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-lg');
+                cameraModeBtn.classList.remove('text-slate-400');
+                fileModeBtn.classList.remove('bg-blue-600', 'text-white', 'shadow-lg');
+                fileModeBtn.classList.add('text-slate-400');
+
+                cameraControls.classList.remove('hidden');
+                fileControls.classList.add('hidden');
+            } else {
+                fileModeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-lg');
+                fileModeBtn.classList.remove('text-slate-400');
+                cameraModeBtn.classList.remove('bg-blue-600', 'text-white', 'shadow-lg');
+                cameraModeBtn.classList.add('text-slate-400');
+
+                fileControls.classList.remove('hidden');
+                cameraControls.classList.add('hidden');
+            }
+        }
+
+        // --- WebSocket ---
+        function connectWebSocket() {
+            const wsUrl = `ws://${window.location.hostname}:8000/ws/drone`;
+            websocket = new WebSocket(wsUrl);
+
+            websocket.onopen = () => {
+                updateStatus('Connected to Backend', 'success');
+                if (currentMode === 'camera') startCameraStream();
+                else startFileStream();
+            };
+
+            websocket.onclose = () => {
+                updateStatus('Disconnected', 'neutral');
+                stopStream();
+            };
+
+            websocket.onerror = (err) => {
+                console.error("WebSocket error:", err);
+                updateStatus('Connection Error', 'error');
+            };
+        }
+
+        function updateStatus(msg, type) {
+            let colorClass = 'bg-slate-500';
+            if (type === 'success') colorClass = 'bg-emerald-500';
+            if (type === 'error') colorClass = 'bg-red-500';
+            if (type === 'active') colorClass = 'bg-blue-500 animate-pulse';
+
+            statusDiv.innerHTML = `
+                <div class="w-2 h-2 rounded-full ${colorClass}"></div>
+                Status: ${msg}
+            `;
+        }
+
+        // --- Camera Logic ---
+        startCameraBtn.addEventListener('click', () => {
+            connectWebSocket();
+        });
+
+        stopCameraBtn.addEventListener('click', stopStream);
+
+        async function startCameraStream() {
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } }
+                });
+                previewVideo.srcObject = mediaStream;
+                previewVideo.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+
+                startCameraBtn.disabled = true;
+                stopCameraBtn.disabled = false;
+                updateStatus('Streaming Camera...', 'active');
+
+                previewVideo.onloadedmetadata = () => {
+                    canvas.width = previewVideo.videoWidth;
+                    canvas.height = previewVideo.videoHeight;
+                    previewVideo.play();
+                };
+
+                streamInterval = setInterval(() => sendFrame(previewVideo), 100);
+            } catch (err) {
+                console.error("Camera Error:", err);
+                updateStatus('Camera Access Denied', 'error');
+                if (websocket) websocket.close();
+            }
+        }
+
+        // --- File Logic ---
+        uploadBtn.addEventListener('click', () => videoUpload.click());
+
+        videoUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                previewVideo.src = url;
+                fileNameDisplay.textContent = file.name;
+                fileNameDisplay.classList.remove('hidden');
+                startFileBtn.disabled = false;
+
+                // Reset preview
+                previewVideo.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            }
+        });
+
+        startFileBtn.addEventListener('click', () => {
+            if (!videoUpload.files[0]) return;
+            connectWebSocket();
+        });
+
+        stopFileBtn.addEventListener('click', stopStream);
+
+        function startFileStream() {
+            previewVideo.play();
+            previewVideo.loop = true;
+
+            startFileBtn.disabled = true;
+            stopFileBtn.disabled = false;
+            uploadBtn.disabled = true;
+            updateStatus('Streaming File...', 'active');
+
+            canvas.width = 640;
+            canvas.height = 640; // Resize for model
+
+            streamInterval = setInterval(() => sendFrame(previewVideo), 100);
+        }
+
+        // --- Shared Logic ---
+        function stopStream() {
+            clearInterval(streamInterval);
+
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+                previewVideo.srcObject = null;
+            }
+
+            previewVideo.pause();
+            if (currentMode === 'file') {
+                previewVideo.currentTime = 0;
+            }
+
+            if (websocket) {
+                websocket.close();
+                websocket = null;
+            }
+
+            // Reset UI
+            startCameraBtn.disabled = false;
+            stopCameraBtn.disabled = true;
+
+            startFileBtn.disabled = false;
+            stopFileBtn.disabled = true;
+            uploadBtn.disabled = false;
+
+            updateStatus('Stopped', 'neutral');
+        }
+
+        function sendFrame(sourceVideo) {
+            if (!websocket || websocket.readyState !== WebSocket.OPEN) return;
+            if (sourceVideo.paused || sourceVideo.ended) return;
+
+            ctx.drawImage(sourceVideo, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob((blob) => {
+                if (blob && websocket.readyState === WebSocket.OPEN) {
+                    websocket.send(blob);
+                }
+            }, 'image/jpeg', 0.7);
+        }
+    </script>
+</body>
+
+</html>
