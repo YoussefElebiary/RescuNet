@@ -23,23 +23,33 @@ RescuNet is a comprehensive platform designed to revolutionize emergency respons
 - **Hybrid Solver**: Features a high-performance **C++ Routing Engine** with a robust Python fallback to calculate optimal rescue paths.
 - **Interactive Map**: Plan missions, manage nodes, and visualize routes using **MapLibre GL JS**.
 
-![Route Planner Screenshot](./assets/route.png)
-*Interactive Mission Planning Map*
+<div align="center" style="padding: 0; margin: 0; top: 0;">
+  <img src="./assets/route.png" alt="Route Planner Screenshot" />
+  <br>
+  <i>Interactive Mission Planning Map</i>
+</div>
 
 ### 🚁 Aerial Intelligence
 - **Real-Time Detection**: Utilizes **YOLOv11** to detect survivors and fire hazards instantly from drone video feeds.
 - **Dual-Mode Surveillance**: Supports both **Thermal** (Person Detection) and **RGB** (Fire Detection) modes for versatile operation.
 - **Low-Latency Streaming**: WebSocket-based architecture ensures real-time video transmission and processing.
 
-![Aerial Intelligence Screenshot](./assets/live_feed.png)
-*Live Drone Feed with Object Detection*
+<div align="center" style="padding: 0; margin: 0; top: 0;">
+  <img src="./assets/live_feed.png" alt="Live Drone Feed with Object Detection" />
+  <br>
+  <i>Live Drone Feed with Object Detection</i>
+</div>
 
 ### 💬 Text Analysis
-- **Emergency Classification**: Analyzes distress messages and reports to distinguish between genuine emergencies, non-emergencies, and fake/spam reports.
-- **Entity Extraction**: Automatically identifies key information within text to aid decision-making.
+- **Two-Stage Classification Pipeline**:
+  1. **Fake News Detection**: The first model filters out fake or spam reports. If a report is flagged as fake, it is immediately returned.
+  2. **Emergency Classification**: Valid reports are passed to a second model to determine if they constitute a genuine emergency or a non-emergency situation.
 
-![Text Analysis Screenshot](PLACEHOLDER_IMAGE_URL_HERE)
-*Emergency Text Classification Interface*
+<div align="center" style="padding: 0; margin: 0; top: 0;">
+  <img src="./assets/text_analysis.png" alt="Text Analysis Screenshot" />
+  <br>
+  <i>Emergency Text Classification Interface</i>
+</div>
 
 ## Tech Stack
 
