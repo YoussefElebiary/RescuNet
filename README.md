@@ -1,7 +1,7 @@
 # RescuNet
 
 <div align="center" style="padding: 0; margin: 0; top: 0;">
-  <img src="./assets/rescunet.png" alt="RescuNet Text" width="300" />
+  <img src="./docs/assets/rescunet.png" alt="RescuNet Text" width="300" />
   <p><b>Next-Gen Disaster Response Intelligence</b></p>
   <p>
     <a href="#key-features">Key Features</a> •
@@ -24,7 +24,7 @@ RescuNet is a comprehensive platform designed to revolutionize emergency respons
 - **Interactive Map**: Plan missions, manage nodes, and visualize routes using **MapLibre GL JS**.
 
 <div align="center" style="padding: 0; margin: 0; top: 0;">
-  <img src="./assets/route.png" alt="Route Planner Screenshot" />
+  <img src="./docs/assets/route.png" alt="Route Planner Screenshot" />
   <br>
   <i>Interactive Mission Planning Map</i>
 </div>
@@ -37,7 +37,7 @@ RescuNet is a comprehensive platform designed to revolutionize emergency respons
 - **Low-Latency Streaming**: WebSocket-based architecture ensures real-time video transmission and processing.
 
 <div align="center" style="padding: 0; margin: 0; top: 0;">
-  <img src="./assets/live_feed.png" alt="Live Drone Feed with Object Detection" />
+  <img src="./docs/assets/live_feed.png" alt="Live Drone Feed with Object Detection" />
   <br>
   <i>Live Drone Feed with Object Detection</i>
 </div>
@@ -48,7 +48,7 @@ RescuNet is a comprehensive platform designed to revolutionize emergency respons
   2. **Emergency Classification**: Valid reports are passed to a second model to determine if they constitute a genuine emergency or a non-emergency situation.
 
 <div align="center" style="padding: 0; margin: 0; top: 0;">
-  <img src="./assets/text_analysis.png" alt="Text Analysis Screenshot" />
+  <img src="./docs/assets/text_analysis.png" alt="Text Analysis Screenshot" />
   <br>
   <i>Emergency Text Classification Interface</i>
 </div>
