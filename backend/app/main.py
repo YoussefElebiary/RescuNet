@@ -20,6 +20,7 @@ from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 import asyncio
 import json
 import sys
+import re
 from pathlib import Path
 from typing import List
 
@@ -32,6 +33,9 @@ from ultralytics import YOLO
 from models.rescunet import (
     RescuNet,
     extract_pyg_data,
+)
+from models.text_classifier import (
+    load_text_classifier,
 )
 
 from networkx import (
@@ -55,6 +59,7 @@ from .models import (
     RouteRequest,
     Bbox,
 )
+from pydantic import BaseModel
 
 try:
     import rescunet
@@ -106,10 +111,17 @@ except Exception as e:
 try:
     rescunet_model = RescuNet()
     rescunet_model.load_model(model_path="./models/weights/rescunet.pt", device=device)
-    print(f"GNN model loaded successfully to device: {device}\n")
+    print(f"GNN model loaded successfully to device: {device}")
 except Exception as e:
     print(f"Warning: Could not load Rescunet model: {e}")
     rescunet_model = None
+
+try:
+    text_classifier_model, vocab = load_text_classifier(model_path="./models/weights/text_classifier.pt", device=device)
+    print(f"Text classifier model loaded successfully to device: {device}\n")
+except Exception as e:
+    print(f"Warning: Could not load Text classifier model: {e}")
+    text_classifier_model = None
 ########################
 
 
@@ -153,6 +165,32 @@ class ConnectionManager:
                 pass
 
 manager = ConnectionManager()
+########################
+
+# ========== TEXT ANALYSIS HELPERS ========== #
+class TextAnalysisRequest(BaseModel):
+    text: str
+
+def clean_text(text):
+    text = str(text).lower()
+    text = re.sub(r'https?://\S+|www\.\S+', '', text)
+    text = re.sub(r'[^\w\s]', '', text)
+    return text
+
+def tokenize_text(text: str, vocab: dict, max_len: int = 100) -> torch.Tensor:
+    text = clean_text(text)
+    words = text.split()
+    
+    # Map words to indices
+    indices = [vocab.get(word, vocab.get('<UNK>', 1)) for word in words]
+    
+    # Pad or Truncate
+    if len(indices) < max_len:
+        indices += [vocab.get('<PAD>', 0)] * (max_len - len(indices))
+    else:
+        indices = indices[:max_len]
+        
+    return torch.tensor([indices], dtype=torch.long) # Batch size 1
 ########################
 
 # ========== INFERENCE HELPER ========== #
@@ -319,6 +357,53 @@ def load_graph(bbox: Bbox) -> JSONResponse:
         }, status_code=HTTP_200_OK)
     else:
         return JSONResponse(content={"error": "Failed to download graph"}, status_code=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@app.post("/api/analyze-text")
+def analyze_text(req: TextAnalysisRequest) -> JSONResponse:
+    if not text_classifier_model:
+        return JSONResponse(content={"error": "Text classifier model not loaded"}, status_code=HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    try:
+        # Tokenize
+        input_ids = tokenize_text(req.text, vocab).to(device)
+        
+        # Inference
+        with torch.no_grad():
+            logits = text_classifier_model(input_ids, use_temperature=True)
+            probs = torch.softmax(logits, dim=1).cpu().numpy()[0]
+            
+        # Logic provided by user
+        CONFIDENCE_THRESHOLD = 0.65
+        confidence = float(probs[1]) # Probability of class 1 (Real Disaster)
+        
+        is_real = confidence > CONFIDENCE_THRESHOLD
+        
+        if is_real:
+            if confidence > 0.85:
+                priority = "HIGH - Immediate attention required"
+            elif confidence > 0.70:
+                priority = "MEDIUM - Review within 1 hour"
+            else:
+                priority = "LOW - Review when possible"
+            prediction = "REAL DISASTER"
+        else:
+            priority = "IGNORE - Not a real disaster"
+            prediction = "FAKE/ABSURD"
+        
+        return JSONResponse(content={
+            "prediction": prediction,
+            "confidence": confidence,
+            "priority": priority,
+            "probabilities": {
+                "emergency": confidence,
+                "not_emergency": 1.0 - confidence,
+            }
+        }, status_code=HTTP_200_OK)
+        
+    except Exception as e:
+        print(f"Text Analysis Failed: {e}")
+        return JSONResponse(content={"error": str(e)}, status_code=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @app.post("/api/infer-routes")

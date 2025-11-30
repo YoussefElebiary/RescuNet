@@ -80,3 +80,42 @@ We utilize the **Ultralytics YOLOv11** architecture for high-speed, real-time ob
 4.  **Post-processing**: Bounding boxes and labels are drawn directly onto the frame.
     -   *Adaptive Text*: Labels are rendered below the box if the object is too close to the top edge of the frame.
 5.  **Encoding**: The processed frame is re-encoded to JPEG and broadcast to clients.
+
+---
+
+## 3. Text Analysis (LSTM)
+
+The system employs a **Long Short-Term Memory (LSTM)** network to classify incoming distress messages. This ensures that resources are prioritized for genuine emergencies.
+
+### Architecture
+
+-   **Model Type**: Recurrent Neural Network (RNN) with LSTM units.
+-   **Embedding Layer**: Converts tokenized words into dense vectors of fixed size.
+-   **LSTM Layer**: Processes the sequence of embeddings, capturing context and long-term dependencies in the text.
+-   **Fully Connected Layer**: Maps the final hidden state of the LSTM to class scores (logits).
+
+### Preprocessing Pipeline
+
+1.  **Cleaning**:
+    -   Convert to lowercase.
+    -   Remove URLs and special characters (punctuation).
+2.  **Tokenization**:
+    -   Split text into individual words.
+    -   Map words to integer indices using a predefined vocabulary.
+    -   Handle unknown words with an `<UNK>` token.
+3.  **Padding**:
+    -   Sequences are padded or truncated to a fixed length (e.g., 128 tokens) to ensure uniform input size.
+
+### Classification Logic
+
+The model outputs a probability score for the "Real Disaster" class ($P_{real}$).
+
+-   **Prediction**:
+    -   If $P_{real} > 0.65$: **REAL DISASTER**
+    -   Else: **FAKE/ABSURD**
+
+-   **Priority Assignment** (for Real Disasters):
+    -   $P_{real} > 0.85$: **HIGH** - Immediate attention required.
+    -   $P_{real} > 0.70$: **MEDIUM** - Review within 1 hour.
+    -   Else: **LOW** - Review when possible.
+

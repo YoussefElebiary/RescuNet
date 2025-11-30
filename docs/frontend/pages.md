@@ -74,14 +74,16 @@ The **Text Analysis** page provides an interface for the system's NLP pipeline, 
 ### Key Features
 
 -   **Input Methods**:
-    -   Direct text entry.
-    -   File upload (`.txt`, `.csv`, `.json`).
--   **Classification Pipeline** (See `README.md` for model details):
-    -   **Fake News Detection**: Filters out spam or irrelevant messages.
-    -   **Emergency Classification**: Determines if a valid message is an emergency.
+    -   **Direct Entry**: Paste text directly into the input area.
+    -   **File Upload**: Drag and drop support for `.txt`, `.csv`, and `.json` files.
+    -   **Batch Processing**: Automatically parses and analyzes multiple entries from uploaded files.
+-   **Analysis Pipeline**:
+    -   **Prediction**: Classifies text as **REAL DISASTER** or **FAKE/ABSURD**.
+    -   **Priority**: Assigns a priority level (HIGH, MEDIUM, LOW, IGNORE) based on confidence scores.
 -   **Visualization**:
-    -   Displays classification results (Emergency / Not Emergency / Fake).
-    -   Shows confidence probabilities for each class.
+    -   **Compact Layout**: Split-pane design for simultaneous input and result viewing.
+    -   **Result List**: Scrollable list of analysis results for batch operations.
+    -   **Confidence Indicators**: Visual progress bars showing the model's certainty.
 
 ---
 

@@ -43,9 +43,9 @@ RescuNet is a comprehensive platform designed to revolutionize emergency respons
 </div>
 
 ### 💬 Text Analysis
-- **Two-Stage Classification Pipeline**:
-  1. **Fake News Detection**: The first model filters out fake or spam reports. If a report is flagged as fake, it is immediately returned.
-  2. **Emergency Classification**: Valid reports are passed to a second model to determine if they constitute a genuine emergency or a non-emergency situation.
+- **Intelligent Classification**: Uses an **LSTM** model to distinguish between **Real Disasters** and **Fake/Absurd** reports.
+- **Priority Scoring**: Automatically assigns priority levels (**High**, **Medium**, **Low**) based on the model's confidence score.
+- **Batch Processing**: Supports analyzing multiple reports simultaneously from uploaded files (`.txt`, `.csv`, `.json`).
 
 <div align="center" style="padding: 0; margin: 0; top: 0;">
   <img src="./docs/assets/text_analysis.png" alt="Text Analysis Screenshot" />
@@ -150,10 +150,10 @@ RescuNet/
 | Name            | Role                                      |
 |-----------------|-------------------------------------------|
 | [Youssef Elebiary](https://github.com/YoussefElebiary)| Graph Routing Engine (GNN & C++) & Fullstack Development |
-| [Akram Tarek](https://github.com/Akramz1)     | Text Analysis ML Models                   |
-| [Ahmed Ghazaly](https://github.com/ghazaly118) | Text Analysis ML Models                   |
-| [Amr Hassan](https://github.com/amr1372003)      | Object Detection AI Models                |
 | [Mohamed Maher](https://github.com/Maherr11)   | Object Detection AI Models                |
+| [Amr Hassan](https://github.com/amr1372003)      | Object Detection AI Models                |
+| [Ahmed Ghazaly](https://github.com/ghazaly118) | Text Analysis ML Models                   |
+| [Akram Tarek](https://github.com/Akramz1)     | Text Analysis ML Models                   |
 
 ## License
 
