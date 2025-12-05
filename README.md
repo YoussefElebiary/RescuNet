@@ -143,9 +143,10 @@ RescuNet/
 │   └── vite.config.js         # Vite configuration
 ├── notebooks/                 # Jupyter notebooks for AI model experiments
 │   ├── rescunet.ipynb         # GNN model training and experimentation
+│   ├── fire.ipynb             # Fire detection model training (YOLO)
 │   ├── people.ipynb           # RGB People model training (YOLO)
 │   ├── thermal.ipynb          # Thermal model training (YOLO)
-│   └── thermal (noisy).ipynb  # Thermal model training with noise (YOLO)
+│   └── thermal_noisy.ipynb    # Thermal model training with noise (YOLO)
 ├── LICENSE                    # Project license file
 └── README.md                  # Project documentation
 ```
