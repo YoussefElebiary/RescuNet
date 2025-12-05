@@ -49,14 +49,13 @@ The model is built using **PyTorch Geometric** and features a custom architectur
 
 We utilize the **Ultralytics YOLOv11** architecture for high-speed, real-time object detection on drone video feeds. The system operates in two distinct modes:
 
-### Modes of Operation
-
 <div align="center">
     <img src="../assets/yolo.png" alt="YOLOv11 Architecture Diagram" width="700">
     <br>
     <i>Diagram courtesy of Ultralytics (Usage subject to license terms)</i>
 </div>
 
+### Modes of Operation
 
 #### Thermal Mode
 -   **Objective**: Detect survivors in low-visibility conditions (night, smoke, debris).
@@ -88,6 +87,10 @@ We utilize the **Ultralytics YOLOv11** architecture for high-speed, real-time ob
 The system employs a **Long Short-Term Memory (LSTM)** network to classify incoming distress messages. This ensures that resources are prioritized for genuine emergencies.
 
 ### Architecture
+
+<div align="center">
+    <img src="../assets/text_classifier.png" alt="Text Classifier Architecture Diagram" width="500">
+</div>
 
 -   **Model Type**: Recurrent Neural Network (RNN) with LSTM units.
 -   **Embedding Layer**: Converts tokenized words into dense vectors of fixed size.
