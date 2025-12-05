@@ -141,6 +141,10 @@ RescuNet/
 │   ├── index.html             # HTML entry point
 │   ├── package.json           # Dependencies
 │   └── vite.config.js         # Vite configuration
+├── notebooks/                 # Jupyter notebooks for AI model experiments
+│   ├── rescunet.ipynb         # GNN model training and experimentation
+│   ├── people.ipynb           # RGB People model training (YOLO)
+│   └── thermal.ipynb          # Thermal model training (YOLO)
 ├── LICENSE                    # Project license file
 └── README.md                  # Project documentation
 ```
