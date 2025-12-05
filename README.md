@@ -124,7 +124,10 @@ Open the URL shown in the terminal (usually `http://localhost:5173`).
 
 ```
 RescuNet/
-├── assets/                    # Project screenshots and logos
+├── docs/                      # Documentation and assets
+│   ├── assets/                # Project screenshots and logos
+│   ├── backend/               # Backend-specific documentation
+│   └── frontend/              # Frontend-specific documentation
 ├── backend/                   # FastAPI application
 │   ├── app/                   # Main application logic and endpoints
 │   ├── models/                # GNN and YOLO model definitions
