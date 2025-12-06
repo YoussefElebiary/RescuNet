@@ -149,7 +149,8 @@ RescuNet/
 │   ├── fire.ipynb             # Fire detection model training (YOLO)
 │   ├── people.ipynb           # RGB People model training (YOLO)
 │   ├── thermal.ipynb          # Thermal model training (YOLO)
-│   └── thermal_noisy.ipynb    # Thermal model training with noise (YOLO)
+│   ├── thermal_noisy.ipynb    # Thermal model training with noise (YOLO)
+│   └── text_classifier.ipynb  # Text analysis model training (LSTM)
 ├── LICENSE                    # Project license file
 └── README.md                  # Project documentation
 ```
