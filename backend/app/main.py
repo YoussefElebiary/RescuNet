@@ -42,6 +42,10 @@ from networkx import (
     MultiDiGraph,
     NetworkXError,
 )
+from osmnx import (
+    project_graph,
+    distance,
+)
 
 from .utils import (
     graph_to_json,
@@ -410,9 +414,12 @@ def analyze_text(req: TextAnalysisRequest) -> JSONResponse:
 def infer_routes(req: RouteRequest) -> JSONResponse:
     try:
         G_cached = get_graph(req.bbox.north, req.bbox.south, req.bbox.east, req.bbox.west)
+        
         if not G_cached:
             return JSONResponse(content={"error": "Graph not found"}, status_code=HTTP_500_INTERNAL_SERVER_ERROR)
         
+
+
         # Deduplicate nodes
         clean_nodes = deduplicate_nodes(req.nodes)
         
@@ -430,7 +437,11 @@ def infer_routes(req: RouteRequest) -> JSONResponse:
 
         if rescunet_model is not None:
             try:
-                data, ordered_edges = extract_pyg_data(G_routing)
+                # Project specific graph for GNN (Meters)
+                G_gnn = project_graph(G_routing)
+                G_gnn = distance.add_edge_lengths(G_gnn)
+                
+                data, ordered_edges = extract_pyg_data(G_gnn)
                 data = data.to(device=device)
                 with torch.no_grad():
                     logits = rescunet_model(data.x, data.edge_index, data.edge_attr, batch=None)
@@ -438,6 +449,7 @@ def infer_routes(req: RouteRequest) -> JSONResponse:
 
                 for i, (u, v, k) in enumerate(ordered_edges):
                     prob = float(probs[i])
+                    # Update the original unprojected graph (Lat/Lon)
                     length: float = G_routing[u][v][k].get('length', 1.0)
                     state: str = G_routing[u][v][k].get('state', 'clear')
                     

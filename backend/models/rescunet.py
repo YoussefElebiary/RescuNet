@@ -22,6 +22,9 @@ def extract_pyg_data(G: Union[MultiDiGraph, MultiGraph]) -> tuple[Data, list[tup
         t = type_map.get(d.get('type', 'road'), 0)
         u = float(d.get('urgency', 0.0))
         c = float(d.get('survivor_count', 0.0))
+        if t == 1:
+            u = max(u, 1.0)
+            c = max(c, 1.0)
         node_feats.append([t, u, c])
     
     x = torch.tensor(node_feats, dtype=torch.float)

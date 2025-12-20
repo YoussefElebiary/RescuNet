@@ -55,7 +55,7 @@ from .models import (
 
 # ========== GRAPH LOADING & EXPORT ========== #
 def download_graph(lat: float, lon: float) -> MultiDiGraph:
-    """Downloads a driving graph with 1250m radius from given lat/lon coordinates
+    """Downloads a driving graph with 3000m radius from given lat/lon coordinates
 
     Args:
         lat (float): Latitude of the middle of the graph
@@ -66,7 +66,7 @@ def download_graph(lat: float, lon: float) -> MultiDiGraph:
         MultiDiGraph: The graph object
     """
     try:
-        G: MultiDiGraph = graph((lat, lon), dist=1250, network_type="drive")
+        G: MultiDiGraph = graph((lat, lon), dist=3000, network_type="drive")
     except ValueError as e:
         raise NetworkXError(str(e))
     return G
