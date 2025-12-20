@@ -116,7 +116,7 @@ export default function RoutePlanner() {
 
         const isTiny = !bbox || (Math.abs(bbox[2] - bbox[0]) < 0.005 && Math.abs(bbox[3] - bbox[1]) < 0.005);
         if (isTiny) {
-            bbox = calculateBboxFromPoint(centerLat, centerLon, 3000);
+            bbox = calculateBboxFromPoint(centerLat, centerLon, 1250);
         }
 
         setSelectedLocation({
@@ -135,7 +135,7 @@ export default function RoutePlanner() {
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 const { latitude: lat, longitude: lon, accuracy } = pos.coords;
-                const bbox = calculateBboxFromPoint(lat, lon, 3000);
+                const bbox = calculateBboxFromPoint(lat, lon, 1250);
                 const newLocation = { lat, lon, bbox, accuracy };
 
                 setSelectedLocation(newLocation);
