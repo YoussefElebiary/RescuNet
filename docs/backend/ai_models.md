@@ -13,7 +13,7 @@ The model is built using **PyTorch Geometric** and features a custom architectur
 -   **Input Layer**:
     -   **Node Features**: `[type, urgency, survivor_count]`
         -   `type`: Embedding (Road, Survivor, Pickup)
-        -   `urgency`: Int (0-10)
+        -   `urgency`: Int (1-10)
         -   `survivor_count`: Int
     -   **Edge Features**: `[log_distance, state]`
         -   `log_distance`: Log-transformed length of the road segment.
@@ -40,7 +40,7 @@ The model is built using **PyTorch Geometric** and features a custom architectur
 1.  **Graph Construction**: The OpenStreetMap road network is converted into a PyTorch Geometric `Data` object.
 2.  **Inference**: The GNN processes the graph and outputs a probability score $P_{edge}$ for each edge.
 3.  **Cost Adjustment**:
-    $$ Cost_{final} = Length \times BaseMultiplier \times (1.0 - (P_{edge} \times 0.8)) $$
+    $$Cost_{final} = Length \times BaseMultiplier \times (1.0 - (P_{edge} \times 0.8))$$
     -   This formula effectively "discounts" the cost of safer, more desirable paths as predicted by the AI, guiding the routing engine towards them.
 
 ---
