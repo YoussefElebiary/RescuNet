@@ -38,10 +38,12 @@ The model is built using **PyTorch Geometric** and features a custom architectur
 ### Usage in Routing
 
 1.  **Graph Construction**: The OpenStreetMap road network is converted into a PyTorch Geometric `Data` object.
-2.  **Inference**: The GNN processes the graph and outputs a probability score $P_{edge}$ for each edge.
-3.  **Cost Adjustment**:
-    $$Cost_{final} = Length \times BaseMultiplier \times (1.0 - (P_{edge} \times 0.8))$$
-    -   This formula effectively "discounts" the cost of safer, more desirable paths as predicted by the AI, guiding the routing engine towards them.
+2.  **Inference**: The GNN processes the graph and outputs a raw probability score, $P_{raw}$, for each edge, indicating the likelihood of it being a viable, optimal path.
+3.  **Thresholding & Rescaling**: To prevent the routing algorithm from being misled by false positives, $P_{raw}$ is gated by a mathematically optimal classification threshold ($T_{opt} = 0.785$, derived from the Precision-Recall curve). Probabilities above this threshold are linearly rescaled to a $0.0$ to $1.0$ range:
+    $$P_{scaled} = \begin{cases} 0, & \text{if } P_{raw} < T_{opt} \\ \frac{P_{raw} - T_{opt}}{1.0 - T_{opt}}, & \text{if } P_{raw} \ge T_{opt} \end{cases}$$
+4.  **Cost Adjustment**: The final edge weight is calculated using the rescaled probability:
+    $$Cost_{final} = Length \times BaseMultiplier \times (1.0 - (P_{scaled} \times 0.8))$$
+    -   This formula effectively applies up to an 80% "discount" to the travel cost of highly confident paths, guiding the shortest-path engine towards them while treating low-confidence or negative predictions as standard physical distances.
 
 ---
 

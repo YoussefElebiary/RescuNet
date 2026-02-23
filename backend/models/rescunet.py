@@ -83,6 +83,7 @@ class RescuNet(nn.Module):
         self.conv1 = GINEConv(
             nn.Sequential(
                 nn.Linear(hidden_dim, hidden_dim),
+                nn.BatchNorm1d(hidden_dim),
                 nn.ReLU(),
                 nn.Linear(hidden_dim, hidden_dim),
             ),
@@ -92,6 +93,7 @@ class RescuNet(nn.Module):
         self.conv2 = GINEConv(
             nn.Sequential(
                 nn.Linear(hidden_dim, hidden_dim),
+                nn.BatchNorm1d(hidden_dim),
                 nn.ReLU(),
                 nn.Linear(hidden_dim, hidden_dim),
             ),
@@ -101,42 +103,47 @@ class RescuNet(nn.Module):
         self.conv3 = GINEConv(
             nn.Sequential(
                 nn.Linear(hidden_dim, hidden_dim),
+                nn.BatchNorm1d(hidden_dim),
                 nn.ReLU(),
                 nn.Linear(hidden_dim, hidden_dim),
             ),
             edge_dim=hidden_dim
         )
 
+        self.ln1 = nn.LayerNorm(hidden_dim)
+        self.ln2 = nn.LayerNorm(hidden_dim)
+        self.ln3 = nn.LayerNorm(hidden_dim)
+        
         self.decoder = nn.Sequential(
-            nn.Linear(3 * hidden_dim, hidden_dim),
+            nn.Linear(3 * hidden_dim, 2 * hidden_dim),
+            nn.LayerNorm(2 * hidden_dim),
             nn.ReLU(),
             nn.Dropout(0.3),
-            nn.Linear(hidden_dim, hidden_dim // 2),
+            nn.Linear(2 * hidden_dim, hidden_dim),
             nn.ReLU(),
-            nn.Linear(hidden_dim // 2, 1),
+            nn.Linear(hidden_dim, 1),
         )
 
-    def forward(self, x, edge_index, edge_attr, batch=None):
-        if batch is None:
-            batch = torch.zeros(x.size(0), dtype=torch.long, device=x.device)
+    def forward(self, x, edge_index, edge_attr, batch):
         node_types = x[:, 0].long()
-        node_nums = x[:, 1:]
+        node_nums = x[:, 1:].float()
 
         emb = self.emb(node_types)
         proj = self.proj(node_nums)
 
         x = torch.cat([emb, proj], dim=1)
         x = self.node_encoder(x)
+        edge_emb = self.edge_encoder(edge_attr.float())
 
-        edge_emb = self.edge_encoder(edge_attr)
-        x = F.relu(self.conv1(x, edge_index, edge_attr=edge_emb)) + x
-        x = F.relu(self.conv2(x, edge_index, edge_attr=edge_emb)) + x
-        x = F.relu(self.conv3(x, edge_index, edge_attr=edge_emb)) + x
+        x = self.ln1(x + F.relu(self.conv1(x, edge_index, edge_attr=edge_emb)))
+        x = self.ln2(x + F.relu(self.conv2(x, edge_index, edge_attr=edge_emb)))
+        x = self.ln3(x + F.relu(self.conv3(x, edge_index, edge_attr=edge_emb)))
 
         row, col = edge_index
         edge_feat_final = torch.cat([x[row], x[col], edge_emb], dim=-1)
 
         logits = self.decoder(edge_feat_final).squeeze(-1)
+
         return logits
 
     def load_model(self, model_path, device):

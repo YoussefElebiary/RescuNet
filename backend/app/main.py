@@ -447,6 +447,8 @@ def infer_routes(req: RouteRequest) -> JSONResponse:
                     logits = rescunet_model(data.x, data.edge_index, data.edge_attr, batch=None)
                     probs = torch.sigmoid(logits).cpu().numpy()
 
+                OPTIMAL_THRESHOLD = 0.785    # Found by the Precision-Recall Curve (Check rescunet.ipynb for details)
+
                 for i, (u, v, k) in enumerate(ordered_edges):
                     prob = float(probs[i])
                     # Update the original unprojected graph (Lat/Lon)
@@ -457,7 +459,12 @@ def infer_routes(req: RouteRequest) -> JSONResponse:
                     if state == 'blocked': base_mult = 10000.0
                     elif state == 'partial': base_mult = 5.0
                     
-                    neural_discount = 1.0 - (prob * 0.8)
+                    if prob < OPTIMAL_THRESHOLD:
+                        scaled_prob = 0.0
+                    else:
+                        scaled_prob = (prob - OPTIMAL_THRESHOLD) / (1.0 - OPTIMAL_THRESHOLD)
+
+                    neural_discount = 1.0 - (scaled_prob * 0.8)
                     
                     G_routing[u][v][k]['travel_cost'] = length * base_mult * neural_discount
                     
